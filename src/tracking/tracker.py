@@ -1,120 +1,110 @@
-import numpy as np
-from filterpy.kalman import KalmanFilter
 import math
-import time 
+from collections import deque
 
 class BallTracker:
-    def __init__(self, fps=30):
+    def __init__(self, fps=30, window=5):
         self.fps = fps
         self.dt = 1.0 / fps
 
-        # Kalman Filter: [x, y, vx, vy]
-        self.kf = KalmanFilter(dim_x=4, dim_z=2)
-        self.kf.x = np.zeros((4, 1))
-
-        self.kf.F = np.array([
-            [1, 0, self.dt, 0],
-            [0, 1, 0, self.dt],
-            [0, 0, 1, 0],
-            [0, 0, 0, 1]
-        ])
-
-        self.kf.H = np.array([
-            [1, 0, 0, 0],
-            [0, 1, 0, 0]
-        ])
-
-        # Motion-friendly tuning
-        self.kf.P *= 500.0
-        self.kf.R *= 1.0
-        self.kf.Q *= 1.0
+        # position history (for stable velocity)
+        self.positions = deque(maxlen=window)
 
         self.initialized = False
 
-        # ---- bounce & speed state ----
+        # velocity
+        self.vx = 0.0
+        self.vy = 0.0
+
+        # speed
+        self.max_speed = 0.0
         self.prev_speed = None
-        self.frame_count = 0
-        self.last_bounce_frame = -100
-        self.last_bounce_position = None
-        self.missed_frames = 0
+
+        # bounce / pitch
+        self.has_bounced = False
         self.bounce_y = None
         self.pitch_type = None
-         
 
-
-        # ---- per-delivery speed ----
-        self.max_speed_kmph = 0.0
+        # lifecycle
+        self.missed_frames = 0
 
     # ---------------- core ----------------
-    def reset_delivery(self):
-        self.max_speed_kmph = 0.0
-        self.prev_speed = None
+    def reset(self):
+        self.__init__(self.fps)
 
-    def update(self, measurement):
-        x, y = measurement
+    def update(self, pos):
+        self.positions.append(pos)
 
-        if not self.initialized:
-            self.kf.x = np.array([[x], [y], [0], [0]])
+        if len(self.positions) < 2:
             self.initialized = True
-            self.reset_delivery()
-        else:
-            self.kf.update(np.array([[x], [y]]))
+            return
 
-    def predict(self, dt):
-        self.kf.F[0, 2] = dt
-        self.kf.F[1, 3] = dt
-        self.kf.predict()
-        return self.get_position()
+        (x1, y1) = self.positions[-2]
+        (x2, y2) = self.positions[-1]
 
+        self.vx = (x2 - x1) * self.fps
+        self.vy = (y2 - y1) * self.fps
+
+        self.initialized = True
+
+    def predict(self):
+        if not self.initialized or len(self.positions) == 0:
+            return None
+
+        x, y = self.positions[-1]
+        return (
+            int(x + self.vx * self.dt),
+            int(y + self.vy * self.dt)
+        )
 
     def get_position(self):
-        return int(self.kf.x[0, 0]), int(self.kf.x[1, 0])
+        return self.positions[-1]
 
-    def get_velocity(self):
-        vx, vy = self.kf.x[2, 0], self.kf.x[3, 0]
-        speed_px_per_sec = math.sqrt(vx * vx + vy * vy)
-        return vx, vy, speed_px_per_sec
+    # ---------------- speed ----------------
+    def get_speed_kmph(self, meters_per_pixel, perspective_scale=1.0):
+        speed_px = math.sqrt(self.vx**2 + self.vy**2)
 
-    def get_speed_kmph(self, meters_per_pixel):
-        _, _, speed_px = self.get_velocity()
-        return speed_px * meters_per_pixel * 3.6
+        speed = speed_px * meters_per_pixel * 3.6 * perspective_scale
 
-    def update_max_speed(self, meters_per_pixel):
-        speed = self.get_speed_kmph(meters_per_pixel)
-        if speed > self.max_speed_kmph:
-            self.max_speed_kmph = speed
-        return self.max_speed_kmph
+        # 🚨 HARD PHYSICAL LIMIT
+        speed = min(speed, 160.0)
 
-    # ---------------- bounce detection ----------------
+        return speed
+
+    def update_max_speed(self, speed):
+        if speed > self.max_speed:
+            self.max_speed = speed
+        return self.max_speed
+
+    # ---------------- bounce ----------------
     def detect_bounce(self):
-        self.frame_count += 1
+        if not self.initialized:
+            return False
 
-        _, _, speed = self.get_velocity()
+        speed = math.sqrt(self.vx**2 + self.vy**2)
 
-        # 🔒 FIRST FRAME GUARD (CRITICAL FIX)
         if self.prev_speed is None:
             self.prev_speed = speed
             return False
 
         speed_drop = self.prev_speed - speed
-        bounce = False
 
-        # Robust bounce condition
+        print(f"speed_drop={speed_drop:.2f}, vy={self.vy:.2f}")
+
         if (
-            speed_drop > 8.0 and
-            speed < self.prev_speed and
-            self.frame_count - self.last_bounce_frame > 12
+            not self.has_bounced and
+            speed_drop > 15.0 and        # realistic drop
+            abs(self.vy) < 200           # vertical flattening
         ):
-            bounce = True
-            self.last_bounce_frame = self.frame_count
-            self.last_bounce_position = self.get_position()
+            self.has_bounced = True
+            self.bounce_y = self.positions[-1][1]
+            print("✅ BOUNCE DETECTED")
+            return True
 
         self.prev_speed = speed
-        return bounce
+        return False
+
+    # ---------------- pitch ----------------
     def classify_pitch(self, frame_height):
-        """
-        Classify pitch length based on bounce Y position
-        """
         if self.bounce_y is None:
             return None
 
@@ -128,18 +118,3 @@ class BallTracker:
             return "GOOD"
         else:
             return "SHORT"
-
-    
-    def reset(self):
-        self.initialized = False
-        self.x = None
-        self.y = None
-        self.vx = 0.0
-        self.vy = 0.0
-
-        self.prev_speed = None
-        self.max_speed = 0.0
-        self.missed_frames = 0     
-        self.bounce_y = None
-        self.pitch_type = None
-
