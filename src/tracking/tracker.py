@@ -1,23 +1,20 @@
 import math
+import time
 from collections import deque
 
 class BallTracker:
-    def __init__(self, fps=30, window=5):
-        self.fps = fps
-        self.dt = 1.0 / fps
-
-        # position history (for stable velocity)
+    def __init__(self, window=6):
+        # stores (x, y, t)
         self.positions = deque(maxlen=window)
 
         self.initialized = False
-
-        # velocity
         self.vx = 0.0
         self.vy = 0.0
+        self.instant_speed = 0.0
 
-        # speed
+        # speed states
+        self.release_speed = None
         self.max_speed = 0.0
-        self.prev_speed = None
 
         # bounce / pitch
         self.has_bounced = False
@@ -27,94 +24,85 @@ class BallTracker:
         # lifecycle
         self.missed_frames = 0
 
-    # ---------------- core ----------------
+    # ---------------- CORE ----------------
     def reset(self):
-        self.__init__(self.fps)
+        self.__init__()
 
     def update(self, pos):
-        self.positions.append(pos)
+        x, y = pos
+        t = time.time()
+        self.positions.append((x, y, t))
 
         if len(self.positions) < 2:
             self.initialized = True
             return
 
-        (x1, y1) = self.positions[-2]
-        (x2, y2) = self.positions[-1]
+        x1, y1, t1 = self.positions[-2]
+        x2, y2, t2 = self.positions[-1]
 
-        self.vx = (x2 - x1) * self.fps
-        self.vy = (y2 - y1) * self.fps
+        dt = max(t2 - t1, 1e-3)
+
+        self.vx = (x2 - x1) / dt
+        self.vy = (y2 - y1) / dt
+        self.instant_speed = math.sqrt(self.vx**2 + self.vy**2)
 
         self.initialized = True
 
     def predict(self):
-        if not self.initialized or len(self.positions) == 0:
+        if not self.initialized or not self.positions:
             return None
 
-        x, y = self.positions[-1]
-        return (
-            int(x + self.vx * self.dt),
-            int(y + self.vy * self.dt)
-        )
+        x, y, _ = self.positions[-1]
+        return int(x + self.vx * 0.03), int(y + self.vy * 0.03)
 
     def get_position(self):
-        return self.positions[-1]
+        x, y, _ = self.positions[-1]
+        return int(x), int(y)
 
-    # ---------------- speed ----------------
+    # ---------------- SPEED ----------------
     def get_speed_kmph(self, meters_per_pixel, perspective_scale=1.0):
-        speed_px = math.sqrt(self.vx**2 + self.vy**2)
+        speed = self.instant_speed * meters_per_pixel * 3.6 * perspective_scale
 
-        speed = speed_px * meters_per_pixel * 3.6 * perspective_scale
+        # physical safeguard (fast bowling ceiling)
+        speed = min(speed, 155.0)
 
-        # 🚨 HARD PHYSICAL LIMIT
-        speed = min(speed, 160.0)
+        # lock release speed once
+        if self.release_speed is None and speed > 80:
+            self.release_speed = speed
 
+        self.max_speed = max(self.max_speed, speed)
         return speed
 
-    def update_max_speed(self, speed):
-        if speed > self.max_speed:
-            self.max_speed = speed
-        return self.max_speed
-
-    # ---------------- bounce ----------------
+    # ---------------- BOUNCE ----------------
     def detect_bounce(self):
-        if not self.initialized:
+        if len(self.positions) < 3:
             return False
 
-        speed = math.sqrt(self.vx**2 + self.vy**2)
+        p = list(self.positions)
+        _, y1, _ = p[-3]
+        _, y2, _ = p[-2]
+        _, y3, _ = p[-1]
 
-        if self.prev_speed is None:
-            self.prev_speed = speed
-            return False
-
-        speed_drop = self.prev_speed - speed
-
-        print(f"speed_drop={speed_drop:.2f}, vy={self.vy:.2f}")
-
-        if (
-            not self.has_bounced and
-            speed_drop > 15.0 and        # realistic drop
-            abs(self.vy) < 200           # vertical flattening
-        ):
+        # down → flatten → up
+        if not self.has_bounced and (y2 > y1 and y3 < y2):
             self.has_bounced = True
-            self.bounce_y = self.positions[-1][1]
-            print("✅ BOUNCE DETECTED")
+            self.bounce_y = y2
             return True
 
-        self.prev_speed = speed
         return False
 
-    # ---------------- pitch ----------------
+    # ---------------- PITCH ----------------
     def classify_pitch(self, frame_height):
         if self.bounce_y is None:
             return None
 
-        y_norm = self.bounce_y / frame_height
+        y = self.bounce_y / frame_height
 
-        if y_norm > 0.75:
+        if y > 0.75:
             return "YORKER"
-        elif y_norm > 0.55:
+        elif y > 0.55:
             return "FULL"
-        elif y_norm > 0.35:
+        elif y > 0.35:
             return "GOOD"
         else:
             return "SHORT"
