@@ -5,8 +5,8 @@ from src.tracking.tracker import BallTracker
 from src.association.data_association import associate_ball
 
 # ---------------- CONFIG ----------------
-MODEL_PATH = r"C:\cricket player train\ball\runs\detect\ball_stump_test\weights\best.pt"
-VIDEO_PATH = r"C:\cricket-ai\data\samples\test3.mp4"
+MODEL_PATH = r"C:\CricketSense-Ball\ball_test\weights\best.pt"
+VIDEO_PATH = r"C:\CricketSense\data\samples\test3.mp4"
 METERS_PER_PIXEL = 20.12 / 520
 
 def perspective_scale(y, h):
