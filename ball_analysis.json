@@ -1,0 +1,211 @@
+[
+    {
+        "ball_id": 1,
+        "release_speed_kmph": 18.0,
+        "max_speed_kmph": 105.34,
+        "pitch_type": null,
+        "bounce_y_px": null,
+        "release_point": [
+            840,
+            478
+        ]
+    },
+    {
+        "ball_id": 2,
+        "release_speed_kmph": 18.0,
+        "max_speed_kmph": 161.59,
+        "pitch_type": "FULL",
+        "bounce_y_px": 609,
+        "release_point": [
+            873,
+            353
+        ]
+    },
+    {
+        "ball_id": 3,
+        "release_speed_kmph": 0,
+        "max_speed_kmph": 0.0,
+        "pitch_type": null,
+        "bounce_y_px": null,
+        "release_point": [
+            337,
+            303
+        ]
+    },
+    {
+        "ball_id": 4,
+        "release_speed_kmph": 18.0,
+        "max_speed_kmph": 23.34,
+        "pitch_type": null,
+        "bounce_y_px": null,
+        "release_point": [
+            851,
+            923
+        ]
+    },
+    {
+        "ball_id": 5,
+        "release_speed_kmph": 18.0,
+        "max_speed_kmph": 111.31,
+        "pitch_type": null,
+        "bounce_y_px": null,
+        "release_point": [
+            838,
+            314
+        ]
+    },
+    {
+        "ball_id": 6,
+        "release_speed_kmph": 18.0,
+        "max_speed_kmph": 32.44,
+        "pitch_type": null,
+        "bounce_y_px": null,
+        "release_point": [
+            854,
+            505
+        ]
+    },
+    {
+        "ball_id": 7,
+        "release_speed_kmph": 18.0,
+        "max_speed_kmph": 168.07,
+        "pitch_type": null,
+        "bounce_y_px": null,
+        "release_point": [
+            1008,
+            412
+        ]
+    },
+    {
+        "ball_id": 8,
+        "release_speed_kmph": 18.0,
+        "max_speed_kmph": 24.39,
+        "pitch_type": null,
+        "bounce_y_px": null,
+        "release_point": [
+            748,
+            387
+        ]
+    },
+    {
+        "ball_id": 9,
+        "release_speed_kmph": 0,
+        "max_speed_kmph": 0.0,
+        "pitch_type": null,
+        "bounce_y_px": null,
+        "release_point": [
+            786,
+            471
+        ]
+    },
+    {
+        "ball_id": 10,
+        "release_speed_kmph": 0,
+        "max_speed_kmph": 0.0,
+        "pitch_type": null,
+        "bounce_y_px": null,
+        "release_point": [
+            958,
+            642
+        ]
+    },
+    {
+        "ball_id": 11,
+        "release_speed_kmph": 0,
+        "max_speed_kmph": 4.56,
+        "pitch_type": null,
+        "bounce_y_px": null,
+        "release_point": [
+            1045,
+            336
+        ]
+    },
+    {
+        "ball_id": 12,
+        "release_speed_kmph": 0,
+        "max_speed_kmph": 0.0,
+        "pitch_type": null,
+        "bounce_y_px": null,
+        "release_point": [
+            625,
+            508
+        ]
+    },
+    {
+        "ball_id": 13,
+        "release_speed_kmph": 0,
+        "max_speed_kmph": 0.0,
+        "pitch_type": null,
+        "bounce_y_px": null,
+        "release_point": [
+            831,
+            397
+        ]
+    },
+    {
+        "ball_id": 14,
+        "release_speed_kmph": 18.0,
+        "max_speed_kmph": 258.27,
+        "pitch_type": null,
+        "bounce_y_px": null,
+        "release_point": [
+            722,
+            539
+        ]
+    },
+    {
+        "ball_id": 15,
+        "release_speed_kmph": 18.0,
+        "max_speed_kmph": 103.83,
+        "pitch_type": null,
+        "bounce_y_px": null,
+        "release_point": [
+            689,
+            456
+        ]
+    },
+    {
+        "ball_id": 16,
+        "release_speed_kmph": 18.0,
+        "max_speed_kmph": 99.19,
+        "pitch_type": null,
+        "bounce_y_px": null,
+        "release_point": [
+            702,
+            450
+        ]
+    },
+    {
+        "ball_id": 17,
+        "release_speed_kmph": 0,
+        "max_speed_kmph": 0.0,
+        "pitch_type": null,
+        "bounce_y_px": null,
+        "release_point": [
+            1126,
+            277
+        ]
+    },
+    {
+        "ball_id": 18,
+        "release_speed_kmph": 18.0,
+        "max_speed_kmph": 77.17,
+        "pitch_type": null,
+        "bounce_y_px": null,
+        "release_point": [
+            984,
+            310
+        ]
+    },
+    {
+        "ball_id": 19,
+        "release_speed_kmph": 18.0,
+        "max_speed_kmph": 25.34,
+        "pitch_type": null,
+        "bounce_y_px": null,
+        "release_point": [
+            1090,
+            401
+        ]
+    }
+]

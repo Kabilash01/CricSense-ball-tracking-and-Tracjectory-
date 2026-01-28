@@ -1,5 +1,7 @@
 import cv2
 import time
+import json
+import os
 
 from src.detection.yolo_detector import YoloBallDetector
 from src.tracking.tracker import BallTracker
@@ -9,11 +11,13 @@ from src.association.data_association import associate_ball
 MODEL_PATH = r"C:\CricketSense-Ball\ball_test\weights\best.pt"
 VIDEO_PATH = r"C:\CricketSense\data\samples\test3.mp4"
 
-METERS_PER_PIXEL = 17.5 / 520
+OUTPUT_JSON = "ball_analysis.json"
+
+METERS_PER_PIXEL = 18.5 / 520
 
 def perspective_scale(y, h):
     y_norm = y / h
-    return 1.0 + 0.4 * y_norm 
+    return 1.0 + 0.6 * y_norm
 
 # ---------------- INIT ----------------
 detector = YoloBallDetector(
@@ -23,16 +27,19 @@ detector = YoloBallDetector(
 )
 
 tracker = BallTracker()
-
 cap = cv2.VideoCapture(VIDEO_PATH)
 assert cap.isOpened(), "❌ Failed to open video"
 
 prev_time = time.time()
 
-# FPS counter
+# FPS
 fps_frames = 0
 fps_time = time.time()
 display_fps = 0
+
+# JSON storage
+deliveries = []
+ball_id = 0
 
 # ---------------- LOOP ----------------
 while True:
@@ -50,7 +57,7 @@ while True:
     predicted = tracker.predict() if tracker.initialized else None
     detections = detector.detect(frame, predicted)
 
-    # draw YOLO detections
+    # draw detections
     for det in detections:
         cx, cy, x1, y1, x2, y2, conf = det
         cv2.rectangle(frame, (x1, y1), (x2, y2), (0,255,0), 2)
@@ -71,10 +78,25 @@ while True:
     else:
         tracker.missed_frames += 1
 
-    if tracker.missed_frames > 15:
+    # ---------- DELIVERY END ----------
+    if tracker.missed_frames > 15 and tracker.initialized:
+        ball_id += 1
+
+        deliveries.append({
+            "ball_id": ball_id,
+            "release_speed_kmph": round(tracker.release_speed or 0, 2),
+            "max_speed_kmph": round(tracker.max_speed, 2),
+            "pitch_type": tracker.pitch_type,
+            "bounce_y_px": tracker.bounce_y,
+            "release_point": {
+                "x": tracker.release_point[0],
+                "y": tracker.release_point[1]
+            }
+        })
+
         tracker.reset()
 
-    # ---------- DRAW TRACKED STATE ----------
+    # ---------- DRAW ----------
     if tracker.initialized:
         x, y = tracker.get_position()
         cv2.circle(frame, (x, y), 6, (0,0,255), -1)
@@ -94,13 +116,11 @@ while True:
 
         if tracker.detect_bounce():
             tracker.pitch_type = tracker.classify_pitch(frame.shape[0])
-            print(f"🏏 BOUNCE → {tracker.pitch_type}")
 
         if tracker.pitch_type:
             cv2.putText(frame, tracker.pitch_type,
                         (20,130), cv2.FONT_HERSHEY_SIMPLEX, 1.0, (0,255,0), 3)
 
-    # FPS overlay
     cv2.putText(frame, f"FPS: {display_fps}",
                 (20,170), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255,255,255), 2)
 
@@ -110,3 +130,9 @@ while True:
 
 cap.release()
 cv2.destroyAllWindows()
+
+# ---------------- SAVE JSON ----------------
+with open(OUTPUT_JSON, "w") as f:
+    json.dump(deliveries, f, indent=4)
+
+print(f"✅ JSON saved to {OUTPUT_JSON}")
