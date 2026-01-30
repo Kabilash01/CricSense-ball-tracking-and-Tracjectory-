@@ -1,145 +1,20 @@
 [
     {
         "ball_id": 1,
-        "release_speed_kmph": 18.0,
         "max_speed_kmph": 246.52,
         "pitch_type": "FULL",
-        "bounce_y_px": 721,
-        "release_point": {
-            "x": 1011,
-            "y": 498
-        }
+        "bounce_y_px": 721
     },
     {
         "ball_id": 2,
-        "release_speed_kmph": 18.0,
-        "max_speed_kmph": 98.06,
+        "max_speed_kmph": 98.02,
         "pitch_type": "GOOD",
-        "bounce_y_px": 429,
-        "release_point": {
-            "x": 1015,
-            "y": 400
-        }
+        "bounce_y_px": 429
     },
     {
         "ball_id": 3,
-        "release_speed_kmph": 18.0,
-        "max_speed_kmph": 199.55,
-        "pitch_type": "GOOD",
-        "bounce_y_px": 474,
-        "release_point": {
-            "x": 895,
-            "y": 459
-        }
-    },
-    {
-        "ball_id": 4,
-        "release_speed_kmph": 18.0,
-        "max_speed_kmph": 19.8,
+        "max_speed_kmph": 234.72,
         "pitch_type": null,
-        "bounce_y_px": null,
-        "release_point": {
-            "x": 810,
-            "y": 316
-        }
-    },
-    {
-        "ball_id": 5,
-        "release_speed_kmph": 0,
-        "max_speed_kmph": 0.0,
-        "pitch_type": null,
-        "bounce_y_px": null,
-        "release_point": {
-            "x": 815,
-            "y": 615
-        }
-    },
-    {
-        "ball_id": 6,
-        "release_speed_kmph": 0,
-        "max_speed_kmph": 0.0,
-        "pitch_type": null,
-        "bounce_y_px": null,
-        "release_point": {
-            "x": 769,
-            "y": 466
-        }
-    },
-    {
-        "ball_id": 7,
-        "release_speed_kmph": 0,
-        "max_speed_kmph": 0.0,
-        "pitch_type": null,
-        "bounce_y_px": null,
-        "release_point": {
-            "x": 914,
-            "y": 830
-        }
-    },
-    {
-        "ball_id": 8,
-        "release_speed_kmph": 0,
-        "max_speed_kmph": 0.0,
-        "pitch_type": null,
-        "bounce_y_px": null,
-        "release_point": {
-            "x": 1393,
-            "y": 433
-        }
-    },
-    {
-        "ball_id": 9,
-        "release_speed_kmph": 18.0,
-        "max_speed_kmph": 82.36,
-        "pitch_type": "YORKER",
-        "bounce_y_px": 887,
-        "release_point": {
-            "x": 1292,
-            "y": 863
-        }
-    },
-    {
-        "ball_id": 10,
-        "release_speed_kmph": 18.0,
-        "max_speed_kmph": 153.53,
-        "pitch_type": null,
-        "bounce_y_px": null,
-        "release_point": {
-            "x": 710,
-            "y": 382
-        }
-    },
-    {
-        "ball_id": 11,
-        "release_speed_kmph": 0,
-        "max_speed_kmph": 0.0,
-        "pitch_type": null,
-        "bounce_y_px": null,
-        "release_point": {
-            "x": 1152,
-            "y": 110
-        }
-    },
-    {
-        "ball_id": 12,
-        "release_speed_kmph": 0,
-        "max_speed_kmph": 1.41,
-        "pitch_type": null,
-        "bounce_y_px": null,
-        "release_point": {
-            "x": 806,
-            "y": 184
-        }
-    },
-    {
-        "ball_id": 13,
-        "release_speed_kmph": 18.0,
-        "max_speed_kmph": 192.65,
-        "pitch_type": null,
-        "bounce_y_px": null,
-        "release_point": {
-            "x": 1039,
-            "y": 542
-        }
+        "bounce_y_px": null
     }
 ]
