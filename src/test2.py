@@ -7,11 +7,11 @@ from src.detection.yolo_detector import YoloBallDetector
 from src.tracking.tracker import BallTracker
 from src.association.data_association import associate_ball
 from src.events.ball_bat import BallBatContact
-from src.events.boundary import BoundaryDetector   # 🔹 1️⃣ IMPORT
+from src.events.boundary import BoundaryDetector
 
 # ---------------- CONFIG ----------------
 MODEL_PATH = r"C:\CricketSense-Ball\ball_test\weights\best.pt"
-VIDEO_PATH = r"C:\CricketSense\data\samples\test3.mp4"
+VIDEO_PATH = r"C:\CricketSense\data\samples\test6.mp4"
 
 OUTPUT_JSON = "ball_analysis.json"
 EVENTS_JSON = "events.json"
@@ -22,6 +22,10 @@ def perspective_scale(y, h):
     y_norm = y / h
     return 1.0 + 0.6 * y_norm
 
+# ---------------- GLOBAL EVENT BUFFERS ----------------
+events = []                # all match events
+current_ball_events = []   # per-delivery events
+
 # ---------------- INIT ----------------
 detector = YoloBallDetector(
     model_path=MODEL_PATH,
@@ -31,7 +35,7 @@ detector = YoloBallDetector(
 
 tracker = BallTracker()
 contact_detector = BallBatContact()
-boundary_detector = BoundaryDetector()   # 🔹 2️⃣ INIT
+boundary_detector = BoundaryDetector()
 
 cap = cv2.VideoCapture(VIDEO_PATH)
 assert cap.isOpened(), "❌ Failed to open video"
@@ -40,10 +44,10 @@ assert cap.isOpened(), "❌ Failed to open video"
 fps_frames = 0
 fps_time = time.time()
 display_fps = 0
+fps = cap.get(cv2.CAP_PROP_FPS) or 30
 
-# JSON storage
+# Storage
 deliveries = []
-events = []
 ball_id = 0
 frame_idx = 0
 
@@ -93,16 +97,22 @@ while True:
         try:
             contact, conf = contact_detector.detect(
                 ball_pos=(x, y),
-                bat_box=batter_bbox,   # assumed to exist upstream
+                bat_box=batter_bbox,
                 velocity=(tracker.vx, tracker.vy)
             )
 
             if contact:
-                events.append({
+                event = {
+                    "ball_id": ball_id,
                     "event": "ball_bat_contact",
                     "frame": frame_idx,
-                    "confidence": round(conf, 2)
-                })
+                    "confidence": round(conf, 2),
+                    "timestamp_sec": round(frame_idx / fps, 2)
+                }
+
+                current_ball_events.append(event)
+                print("EVENT:", event)
+
         except NameError:
             pass
 
@@ -115,7 +125,16 @@ while True:
         )
 
         if boundary:
-            print(f"🏏 BOUNDARY: {boundary}")
+            event = {
+                "ball_id": ball_id,
+                "event": "boundary",
+                "type": boundary,
+                "frame": frame_idx,
+                "timestamp_sec": round(frame_idx / fps, 2)
+            }
+
+            current_ball_events.append(event)
+            print("EVENT:", event)
 
             cv2.putText(
                 frame,
@@ -126,12 +145,6 @@ while True:
                 (0, 0, 255),
                 4
             )
-
-            events.append({
-                "event": "boundary",
-                "type": boundary,
-                "ball_id": ball_id
-            })
 
     # ---------- DELIVERY END ----------
     if tracker.missed_frames > 15 and tracker.initialized:
@@ -149,8 +162,13 @@ while True:
             }
         })
 
+        # 🔥 FLUSH EVENTS FOR THIS BALL
+        if current_ball_events:
+            events.extend(current_ball_events)
+            current_ball_events = []
+
         tracker.reset()
-        boundary_detector.reset()   # 🔹 3️⃣ RESET PER DELIVERY
+        boundary_detector.reset()
 
     # ---------- DRAW ----------
     if tracker.initialized:
@@ -187,12 +205,12 @@ while True:
 cap.release()
 cv2.destroyAllWindows()
 
-# ---------------- SAVE JSON ----------------
+# ---------------- SAVE JSON (AFTER VIDEO ENDS) ----------------
 with open(OUTPUT_JSON, "w") as f:
     json.dump(deliveries, f, indent=4)
 
 with open(EVENTS_JSON, "w") as f:
     json.dump(events, f, indent=4)
 
-print(f"✅ Ball data saved to {OUTPUT_JSON}")
-print(f"✅ Events saved to {EVENTS_JSON}")
+print(f"✅ Saved {len(events)} events to {EVENTS_JSON}")
+print(f"✅ Saved {len(deliveries)} deliveries to {OUTPUT_JSON}")
