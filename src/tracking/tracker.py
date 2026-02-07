@@ -116,3 +116,6 @@ class BallTracker:
             return "GOOD"
         else:
             return "SHORT"
+        
+    def get_velocity(self):
+        return self.vx, self.vy

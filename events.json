@@ -1,1 +1,135 @@
-[]
+[
+    {
+        "ball_id": 2,
+        "event": "ball_bat_contact",
+        "frame": 94,
+        "timestamp_sec": 3.14,
+        "confidence": 0.35
+    },
+    {
+        "ball_id": 4,
+        "event": "ball_bat_contact",
+        "frame": 798,
+        "timestamp_sec": 26.63,
+        "confidence": 0.34
+    },
+    {
+        "ball_id": 5,
+        "event": "ball_bat_contact",
+        "frame": 1016,
+        "timestamp_sec": 33.9,
+        "confidence": 0.4
+    },
+    {
+        "ball_id": 8,
+        "event": "ball_bat_contact",
+        "frame": 1208,
+        "timestamp_sec": 40.31,
+        "confidence": 0.99
+    },
+    {
+        "ball_id": 14,
+        "event": "ball_bat_contact",
+        "frame": 2243,
+        "timestamp_sec": 74.84,
+        "confidence": 0.2
+    },
+    {
+        "ball_id": 19,
+        "event": "ball_bat_contact",
+        "frame": 2973,
+        "timestamp_sec": 99.2,
+        "confidence": 0.23
+    },
+    {
+        "ball_id": 24,
+        "event": "ball_bat_contact",
+        "frame": 3739,
+        "timestamp_sec": 124.76,
+        "confidence": 0.27
+    },
+    {
+        "ball_id": 26,
+        "event": "ball_bat_contact",
+        "frame": 3885,
+        "timestamp_sec": 129.63,
+        "confidence": 1.0
+    },
+    {
+        "ball_id": 29,
+        "event": "ball_bat_contact",
+        "frame": 5397,
+        "timestamp_sec": 180.08,
+        "confidence": 0.41
+    },
+    {
+        "ball_id": 39,
+        "event": "ball_bat_contact",
+        "frame": 7458,
+        "timestamp_sec": 248.85,
+        "confidence": 1.0
+    },
+    {
+        "ball_id": 43,
+        "event": "ball_bat_contact",
+        "frame": 8050,
+        "timestamp_sec": 268.6,
+        "confidence": 0.72
+    },
+    {
+        "ball_id": 44,
+        "event": "ball_bat_contact",
+        "frame": 8128,
+        "timestamp_sec": 271.2,
+        "confidence": 0.26
+    },
+    {
+        "ball_id": 44,
+        "event": "boundary",
+        "type": "SIX",
+        "frame": 8204,
+        "timestamp_sec": 273.71
+    },
+    {
+        "ball_id": 45,
+        "event": "boundary",
+        "type": "SIX",
+        "frame": 8258,
+        "timestamp_sec": 275.51
+    },
+    {
+        "ball_id": 45,
+        "event": "ball_bat_contact",
+        "frame": 8286,
+        "timestamp_sec": 276.48,
+        "confidence": 0.35
+    },
+    {
+        "ball_id": 53,
+        "event": "ball_bat_contact",
+        "frame": 9529,
+        "timestamp_sec": 317.95,
+        "confidence": 0.58
+    },
+    {
+        "ball_id": 54,
+        "event": "boundary",
+        "type": "SIX",
+        "frame": 9587,
+        "timestamp_sec": 319.85
+    },
+    {
+        "ball_id": 62,
+        "event": "ball_bat_contact",
+        "frame": 10510,
+        "timestamp_sec": 350.68,
+        "confidence": 1.0
+    },
+    {
+        "ball_id": 66,
+        "event": "ball_bat_contact",
+        "frame": 10757,
+        "timestamp_sec": 358.93,
+        "confidence": 0.28
+    }
+]

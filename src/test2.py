@@ -3,28 +3,28 @@ import time
 import json
 
 from src.detection.yolo_detector import YoloBallDetector
+from src.detection.boundary_detector import BoundaryLineDetector
 from src.tracking.tracker import BallTracker
 from src.association.data_association import associate_ball
-from src.detection.boundary_detector import BoundaryLineDetector
 from src.events.boundary_logic import intersects
 from src.events.boundary_event import classify_boundary
+from src.events.ball_bat import BallBatContact   # ✅ NEW IMPORT
+
 
 # ---------------- CONFIG ----------------
 BALL_MODEL_PATH = r"C:\CricketSense-Ball\ball_test\weights\best.pt"
 BOUNDARY_MODEL_PATH = r"C:\CrickeSense-train\Boundary\runs\detect\boundary_detect\weights\best.pt"
-VIDEO_PATH = r"C:\CricketSense\data\samples\test6.mp4"
+VIDEO_PATH = r"C:\CricketSense\data\samples\test3.mp4"
 
 OUTPUT_JSON = "ball_analysis.json"
 EVENTS_JSON = "events.json"
 
 METERS_PER_PIXEL = 18.5 / 520
 
+
 def perspective_scale(y, h):
     return 1.0 + 0.6 * (y / h)
 
-# ---------------- EVENT BUFFERS ----------------
-events = []
-deliveries = []
 
 # ---------------- INIT ----------------
 ball_detector = YoloBallDetector(
@@ -39,16 +39,31 @@ boundary_detector = BoundaryLineDetector(
 )
 
 tracker = BallTracker()
+contact_detector = BallBatContact()   # ✅ INIT ONCE
 
 cap = cv2.VideoCapture(VIDEO_PATH)
 assert cap.isOpened(), "❌ Failed to open video"
 
 fps = cap.get(cv2.CAP_PROP_FPS) or 30
+
+
+# ---------------- STATE ----------------
 ball_id = 0
 boundary_fired = False
 
-# FPS display
+deliveries = []
+events = []
+
+# ---------------- SCOREBOARD ----------------
+total_runs = 0
+balls = 0
+fours = 0
+sixes = 0
+
+# FPS
 fps_frames, fps_time, display_fps = 0, time.time(), 0
+frame_idx = 0
+
 
 # ---------------- LOOP ----------------
 while True:
@@ -56,30 +71,32 @@ while True:
     if not ret:
         break
 
-    # FPS calc
+    frame_idx += 1
+
+    # ---------- FPS ----------
     fps_frames += 1
     if time.time() - fps_time >= 1.0:
         display_fps = fps_frames
         fps_frames = 0
         fps_time = time.time()
 
-    # ---------------- BALL DETECTION ----------------
+    # ---------- BALL DETECTION ----------
     predicted = tracker.predict() if tracker.initialized else None
     ball_detections = ball_detector.detect(frame, predicted)
 
-    # ---------------- BOUNDARY DETECTION ----------------
+    # ---------- BOUNDARY DETECTION ----------
     boundary_boxes = boundary_detector.detect(frame)
 
-    # Draw boundary boxes (cyan)
+    # ---------- DRAW BOUNDARY ----------
     for bx1, by1, bx2, by2, _ in boundary_boxes:
-        cv2.rectangle(frame, (bx1, by1), (bx2, by2), (255,255,0), 2)
+        cv2.rectangle(frame, (bx1, by1), (bx2, by2), (255, 255, 0), 2)
 
-    # Draw ball detections
+    # ---------- DRAW BALL ----------
     for cx, cy, x1, y1, x2, y2, _ in ball_detections:
-        cv2.rectangle(frame, (x1,y1), (x2,y2), (0,255,0), 2)
-        cv2.circle(frame, (cx,cy), 3, (0,0,255), -1)
+        cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
+        cv2.circle(frame, (cx, cy), 3, (0, 0, 255), -1)
 
-    # ---------------- TRACKER UPDATE ----------------
+    # ---------- TRACKER UPDATE ----------
     if ball_detections:
         tracker.missed_frames = 0
 
@@ -95,42 +112,85 @@ while True:
     else:
         tracker.missed_frames += 1
 
-    # ---------------- BOUNDARY EVENT LOGIC ----------------
+    # ---------------- BALL–BAT CONTACT ----------------
+    if tracker.initialized:
+        vx, vy = tracker.get_velocity()
+
+        contact, conf = contact_detector.detect(vx, vy)
+
+        if contact:
+            event = {
+                "ball_id": ball_id,
+                "event": "ball_bat_contact",
+                "frame": frame_idx,
+                "timestamp_sec": round(frame_idx / fps, 2),
+                "confidence": round(conf, 2)
+            }
+
+            events.append(event)
+            print("🏏 BAT CONTACT:", event)
+
+            # Visual marker
+            x, y = tracker.get_position()
+            cv2.circle(frame, (x, y), 10, (255, 0, 0), 3)
+            cv2.putText(
+                frame,
+                "BAT",
+                (x + 10, y - 10),
+                cv2.FONT_HERSHEY_SIMPLEX,
+                0.8,
+                (255, 0, 0),
+                2
+            )
+
+    # ---------- BOUNDARY EVENT ----------
     if tracker.initialized and not boundary_fired:
         x, y = tracker.get_position()
-        ball_box = (x-6, y-6, x+6, y+6)
+        ball_box = (x - 6, y - 6, x + 6, y + 6)
 
-        for boundary_box in boundary_boxes:
+        for bx1, by1, bx2, by2, _ in boundary_boxes:
+            boundary_box = (bx1, by1, bx2, by2)
+
             if intersects(ball_box, boundary_box):
                 boundary_type = classify_boundary(
                     tracker.get_speed_kmph(METERS_PER_PIXEL),
                     tracker.has_bounced
                 )
 
+                if boundary_type == "FOUR":
+                    total_runs += 4
+                    fours += 1
+                elif boundary_type == "SIX":
+                    total_runs += 6
+                    sixes += 1
+
                 event = {
                     "ball_id": ball_id,
                     "event": "boundary",
                     "type": boundary_type,
-                    "timestamp_sec": round(cap.get(cv2.CAP_PROP_POS_MSEC)/1000, 2)
+                    "frame": frame_idx,
+                    "timestamp_sec": round(
+                        cap.get(cv2.CAP_PROP_POS_MSEC) / 1000, 2
+                    )
                 }
 
                 events.append(event)
                 boundary_fired = True
 
-                print("🏏 EVENT:", event)
+                print("🏏 BOUNDARY:", event)
 
                 cv2.putText(
                     frame,
                     boundary_type,
-                    (frame.shape[1]//2 - 80, 90),
+                    (frame.shape[1] // 2 - 120, 90),
                     cv2.FONT_HERSHEY_SIMPLEX,
-                    2.2,
-                    (0,0,255),
-                    4
+                    2.5,
+                    (0, 0, 255),
+                    5
                 )
                 break
 
-    # ---------------- DELIVERY END ----------------
+    # ---------- DELIVERY END ----------
     if tracker.missed_frames > 15 and tracker.initialized:
         deliveries.append({
             "ball_id": ball_id,
@@ -139,36 +199,46 @@ while True:
             "bounce_y_px": tracker.bounce_y
         })
 
+        balls += 1
         tracker.reset()
+        contact_detector.reset()     # ✅ RESET CONTACT STATE
         boundary_fired = False
 
-    # ---------------- DRAW TRACKER ----------------
-    if tracker.initialized:
-        x, y = tracker.get_position()
-        cv2.circle(frame, (x,y), 6, (0,0,255), -1)
+    # ---------- SCOREBOARD ----------
+    overs = balls // 6
+    balls_in_over = balls % 6
 
-        scale = perspective_scale(y, frame.shape[0])
-        speed = tracker.get_speed_kmph(METERS_PER_PIXEL, scale)
+    score_text = f"{total_runs}/{balls}  ({overs}.{balls_in_over} ov)"
+    stats_text = f"4s: {fours}   6s: {sixes}"
 
-        cv2.putText(frame, f"Speed: {speed:.1f} km/h",
-                    (20,30), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0,255,255), 2)
+    cv2.rectangle(frame, (10, 10), (380, 95), (0, 0, 0), -1)
 
-        cv2.putText(frame, f"Max: {tracker.max_speed:.1f} km/h",
-                    (20,60), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0,0,255), 2)
+    cv2.putText(frame, score_text,
+                (20, 45),
+                cv2.FONT_HERSHEY_SIMPLEX,
+                1.1,
+                (255, 255, 255),
+                3)
 
-        if tracker.detect_bounce():
-            tracker.pitch_type = tracker.classify_pitch(frame.shape[0])
+    cv2.putText(frame, stats_text,
+                (20, 80),
+                cv2.FONT_HERSHEY_SIMPLEX,
+                0.8,
+                (0, 255, 255),
+                2)
 
-        if tracker.pitch_type:
-            cv2.putText(frame, tracker.pitch_type,
-                        (20,100), cv2.FONT_HERSHEY_SIMPLEX, 1.0, (0,255,0), 3)
-
+    # ---------- FPS ----------
     cv2.putText(frame, f"FPS: {display_fps}",
-                (20,140), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255,255,255), 2)
+                (20, 235),
+                cv2.FONT_HERSHEY_SIMPLEX,
+                0.8,
+                (255, 255, 255),
+                2)
 
-    cv2.imshow("CricketSense | Ball + Boundary", frame)
+    cv2.imshow("CricketSense | Broadcast View", frame)
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
+
 
 # ---------------- SAVE JSON ----------------
 cap.release()

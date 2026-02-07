@@ -1,19 +1,415 @@
 [
     {
         "ball_id": 1,
-        "max_speed_kmph": 246.52,
-        "pitch_type": "FULL",
-        "bounce_y_px": 721
+        "max_speed_kmph": 0.0,
+        "pitch_type": null,
+        "bounce_y_px": null
     },
     {
         "ball_id": 2,
-        "max_speed_kmph": 98.02,
-        "pitch_type": "GOOD",
-        "bounce_y_px": 429
+        "max_speed_kmph": 0.0,
+        "pitch_type": null,
+        "bounce_y_px": null
     },
     {
         "ball_id": 3,
-        "max_speed_kmph": 234.72,
+        "max_speed_kmph": 0.0,
+        "pitch_type": null,
+        "bounce_y_px": null
+    },
+    {
+        "ball_id": 4,
+        "max_speed_kmph": 0.0,
+        "pitch_type": null,
+        "bounce_y_px": null
+    },
+    {
+        "ball_id": 5,
+        "max_speed_kmph": 0.0,
+        "pitch_type": null,
+        "bounce_y_px": null
+    },
+    {
+        "ball_id": 6,
+        "max_speed_kmph": 0.0,
+        "pitch_type": null,
+        "bounce_y_px": null
+    },
+    {
+        "ball_id": 7,
+        "max_speed_kmph": 0.0,
+        "pitch_type": null,
+        "bounce_y_px": null
+    },
+    {
+        "ball_id": 8,
+        "max_speed_kmph": 0.0,
+        "pitch_type": null,
+        "bounce_y_px": null
+    },
+    {
+        "ball_id": 9,
+        "max_speed_kmph": 0.0,
+        "pitch_type": null,
+        "bounce_y_px": null
+    },
+    {
+        "ball_id": 10,
+        "max_speed_kmph": 0.0,
+        "pitch_type": null,
+        "bounce_y_px": null
+    },
+    {
+        "ball_id": 11,
+        "max_speed_kmph": 0.0,
+        "pitch_type": null,
+        "bounce_y_px": null
+    },
+    {
+        "ball_id": 12,
+        "max_speed_kmph": 0.0,
+        "pitch_type": null,
+        "bounce_y_px": null
+    },
+    {
+        "ball_id": 13,
+        "max_speed_kmph": 0.0,
+        "pitch_type": null,
+        "bounce_y_px": null
+    },
+    {
+        "ball_id": 14,
+        "max_speed_kmph": 0.0,
+        "pitch_type": null,
+        "bounce_y_px": null
+    },
+    {
+        "ball_id": 15,
+        "max_speed_kmph": 0.0,
+        "pitch_type": null,
+        "bounce_y_px": null
+    },
+    {
+        "ball_id": 16,
+        "max_speed_kmph": 0.0,
+        "pitch_type": null,
+        "bounce_y_px": null
+    },
+    {
+        "ball_id": 17,
+        "max_speed_kmph": 0.0,
+        "pitch_type": null,
+        "bounce_y_px": null
+    },
+    {
+        "ball_id": 18,
+        "max_speed_kmph": 0.0,
+        "pitch_type": null,
+        "bounce_y_px": null
+    },
+    {
+        "ball_id": 19,
+        "max_speed_kmph": 0.0,
+        "pitch_type": null,
+        "bounce_y_px": null
+    },
+    {
+        "ball_id": 20,
+        "max_speed_kmph": 0.0,
+        "pitch_type": null,
+        "bounce_y_px": null
+    },
+    {
+        "ball_id": 21,
+        "max_speed_kmph": 0.0,
+        "pitch_type": null,
+        "bounce_y_px": null
+    },
+    {
+        "ball_id": 22,
+        "max_speed_kmph": 0.0,
+        "pitch_type": null,
+        "bounce_y_px": null
+    },
+    {
+        "ball_id": 23,
+        "max_speed_kmph": 0.0,
+        "pitch_type": null,
+        "bounce_y_px": null
+    },
+    {
+        "ball_id": 24,
+        "max_speed_kmph": 0.0,
+        "pitch_type": null,
+        "bounce_y_px": null
+    },
+    {
+        "ball_id": 25,
+        "max_speed_kmph": 0.0,
+        "pitch_type": null,
+        "bounce_y_px": null
+    },
+    {
+        "ball_id": 26,
+        "max_speed_kmph": 0.0,
+        "pitch_type": null,
+        "bounce_y_px": null
+    },
+    {
+        "ball_id": 27,
+        "max_speed_kmph": 0.0,
+        "pitch_type": null,
+        "bounce_y_px": null
+    },
+    {
+        "ball_id": 28,
+        "max_speed_kmph": 0.0,
+        "pitch_type": null,
+        "bounce_y_px": null
+    },
+    {
+        "ball_id": 29,
+        "max_speed_kmph": 0.0,
+        "pitch_type": null,
+        "bounce_y_px": null
+    },
+    {
+        "ball_id": 30,
+        "max_speed_kmph": 0.0,
+        "pitch_type": null,
+        "bounce_y_px": null
+    },
+    {
+        "ball_id": 31,
+        "max_speed_kmph": 0.0,
+        "pitch_type": null,
+        "bounce_y_px": null
+    },
+    {
+        "ball_id": 32,
+        "max_speed_kmph": 0.0,
+        "pitch_type": null,
+        "bounce_y_px": null
+    },
+    {
+        "ball_id": 33,
+        "max_speed_kmph": 0.0,
+        "pitch_type": null,
+        "bounce_y_px": null
+    },
+    {
+        "ball_id": 34,
+        "max_speed_kmph": 0.0,
+        "pitch_type": null,
+        "bounce_y_px": null
+    },
+    {
+        "ball_id": 35,
+        "max_speed_kmph": 0.0,
+        "pitch_type": null,
+        "bounce_y_px": null
+    },
+    {
+        "ball_id": 36,
+        "max_speed_kmph": 0.0,
+        "pitch_type": null,
+        "bounce_y_px": null
+    },
+    {
+        "ball_id": 37,
+        "max_speed_kmph": 0.0,
+        "pitch_type": null,
+        "bounce_y_px": null
+    },
+    {
+        "ball_id": 38,
+        "max_speed_kmph": 0.0,
+        "pitch_type": null,
+        "bounce_y_px": null
+    },
+    {
+        "ball_id": 39,
+        "max_speed_kmph": 0.0,
+        "pitch_type": null,
+        "bounce_y_px": null
+    },
+    {
+        "ball_id": 40,
+        "max_speed_kmph": 0.0,
+        "pitch_type": null,
+        "bounce_y_px": null
+    },
+    {
+        "ball_id": 41,
+        "max_speed_kmph": 0.0,
+        "pitch_type": null,
+        "bounce_y_px": null
+    },
+    {
+        "ball_id": 42,
+        "max_speed_kmph": 0.0,
+        "pitch_type": null,
+        "bounce_y_px": null
+    },
+    {
+        "ball_id": 43,
+        "max_speed_kmph": 0.0,
+        "pitch_type": null,
+        "bounce_y_px": null
+    },
+    {
+        "ball_id": 44,
+        "max_speed_kmph": 19.03,
+        "pitch_type": null,
+        "bounce_y_px": null
+    },
+    {
+        "ball_id": 45,
+        "max_speed_kmph": 0.0,
+        "pitch_type": null,
+        "bounce_y_px": null
+    },
+    {
+        "ball_id": 46,
+        "max_speed_kmph": 0.0,
+        "pitch_type": null,
+        "bounce_y_px": null
+    },
+    {
+        "ball_id": 47,
+        "max_speed_kmph": 0.0,
+        "pitch_type": null,
+        "bounce_y_px": null
+    },
+    {
+        "ball_id": 48,
+        "max_speed_kmph": 0.0,
+        "pitch_type": null,
+        "bounce_y_px": null
+    },
+    {
+        "ball_id": 49,
+        "max_speed_kmph": 0.0,
+        "pitch_type": null,
+        "bounce_y_px": null
+    },
+    {
+        "ball_id": 50,
+        "max_speed_kmph": 0.0,
+        "pitch_type": null,
+        "bounce_y_px": null
+    },
+    {
+        "ball_id": 51,
+        "max_speed_kmph": 0.0,
+        "pitch_type": null,
+        "bounce_y_px": null
+    },
+    {
+        "ball_id": 52,
+        "max_speed_kmph": 0.0,
+        "pitch_type": null,
+        "bounce_y_px": null
+    },
+    {
+        "ball_id": 53,
+        "max_speed_kmph": 0.0,
+        "pitch_type": null,
+        "bounce_y_px": null
+    },
+    {
+        "ball_id": 54,
+        "max_speed_kmph": 0.0,
+        "pitch_type": null,
+        "bounce_y_px": null
+    },
+    {
+        "ball_id": 55,
+        "max_speed_kmph": 0.0,
+        "pitch_type": null,
+        "bounce_y_px": null
+    },
+    {
+        "ball_id": 56,
+        "max_speed_kmph": 0.0,
+        "pitch_type": null,
+        "bounce_y_px": null
+    },
+    {
+        "ball_id": 57,
+        "max_speed_kmph": 0.0,
+        "pitch_type": null,
+        "bounce_y_px": null
+    },
+    {
+        "ball_id": 58,
+        "max_speed_kmph": 0.0,
+        "pitch_type": null,
+        "bounce_y_px": null
+    },
+    {
+        "ball_id": 59,
+        "max_speed_kmph": 0.0,
+        "pitch_type": null,
+        "bounce_y_px": null
+    },
+    {
+        "ball_id": 60,
+        "max_speed_kmph": 0.0,
+        "pitch_type": null,
+        "bounce_y_px": null
+    },
+    {
+        "ball_id": 61,
+        "max_speed_kmph": 0.0,
+        "pitch_type": null,
+        "bounce_y_px": null
+    },
+    {
+        "ball_id": 62,
+        "max_speed_kmph": 0.0,
+        "pitch_type": null,
+        "bounce_y_px": null
+    },
+    {
+        "ball_id": 63,
+        "max_speed_kmph": 0.0,
+        "pitch_type": null,
+        "bounce_y_px": null
+    },
+    {
+        "ball_id": 64,
+        "max_speed_kmph": 0.0,
+        "pitch_type": null,
+        "bounce_y_px": null
+    },
+    {
+        "ball_id": 65,
+        "max_speed_kmph": 0.0,
+        "pitch_type": null,
+        "bounce_y_px": null
+    },
+    {
+        "ball_id": 66,
+        "max_speed_kmph": 0.0,
+        "pitch_type": null,
+        "bounce_y_px": null
+    },
+    {
+        "ball_id": 67,
+        "max_speed_kmph": 0.0,
+        "pitch_type": null,
+        "bounce_y_px": null
+    },
+    {
+        "ball_id": 68,
+        "max_speed_kmph": 0.0,
+        "pitch_type": null,
+        "bounce_y_px": null
+    },
+    {
+        "ball_id": 69,
+        "max_speed_kmph": 0.0,
         "pitch_type": null,
         "bounce_y_px": null
     }
