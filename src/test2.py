@@ -4,16 +4,18 @@ import json
 
 from src.detection.yolo_detector import YoloBallDetector
 from src.detection.boundary_detector import BoundaryLineDetector
+from src.detection.shot_classifier import ShotClassifier   # 🔥 NEW
 from src.tracking.tracker import BallTracker
 from src.association.data_association import associate_ball
 from src.events.boundary_logic import intersects
 from src.events.boundary_event import classify_boundary
-from src.events.ball_bat import BallBatContact   # ✅ NEW IMPORT
+from src.events.ball_bat import BallBatContact
 
 
 # ---------------- CONFIG ----------------
 BALL_MODEL_PATH = r"C:\CricketSense-Ball\ball_test\weights\best.pt"
 BOUNDARY_MODEL_PATH = r"C:\CrickeSense-train\Boundary\runs\detect\boundary_detect\weights\best.pt"
+SHOT_MODEL_PATH = r"C:\CrickeSense-train\Shot\runs\classify\yolov8m_shot_cls\weights\best.pt"   # 🔥 SET THIS
 VIDEO_PATH = r"C:\CricketSense\data\samples\test3.mp4"
 
 OUTPUT_JSON = "ball_analysis.json"
@@ -38,8 +40,13 @@ boundary_detector = BoundaryLineDetector(
     conf=0.35
 )
 
+shot_classifier = ShotClassifier(   # 🔥 INIT ONCE
+    model_path=SHOT_MODEL_PATH,
+    conf=0.3
+)
+
 tracker = BallTracker()
-contact_detector = BallBatContact()   # ✅ INIT ONCE
+contact_detector = BallBatContact()
 
 cap = cv2.VideoCapture(VIDEO_PATH)
 assert cap.isOpened(), "❌ Failed to open video"
@@ -115,33 +122,40 @@ while True:
     # ---------------- BALL–BAT CONTACT ----------------
     if tracker.initialized:
         vx, vy = tracker.get_velocity()
-
         contact, conf = contact_detector.detect(vx, vy)
 
         if contact:
+            # 🔥 RUN SHOT MODEL ONLY HERE
+            shot_label, shot_conf = shot_classifier.predict(frame)
+
             event = {
                 "ball_id": ball_id,
                 "event": "ball_bat_contact",
                 "frame": frame_idx,
                 "timestamp_sec": round(frame_idx / fps, 2),
-                "confidence": round(conf, 2)
+                "confidence": round(conf, 2),
+                "shot_type": shot_label,
+                "shot_confidence": round(shot_conf, 2)
             }
 
             events.append(event)
             print("🏏 BAT CONTACT:", event)
 
-            # Visual marker
             x, y = tracker.get_position()
-            cv2.circle(frame, (x, y), 10, (255, 0, 0), 3)
-            cv2.putText(
-                frame,
-                "BAT",
-                (x + 10, y - 10),
-                cv2.FONT_HERSHEY_SIMPLEX,
-                0.8,
-                (255, 0, 0),
-                2
-            )
+
+            # Visual marker
+            cv2.circle(frame, (x, y), 12, (255, 0, 0), 3)
+
+            if shot_label:
+                cv2.putText(
+                    frame,
+                    shot_label,
+                    (x + 15, y - 15),
+                    cv2.FONT_HERSHEY_SIMPLEX,
+                    1.0,
+                    (0, 255, 255),
+                    3
+                )
 
     # ---------- BOUNDARY EVENT ----------
     if tracker.initialized and not boundary_fired:
@@ -201,7 +215,7 @@ while True:
 
         balls += 1
         tracker.reset()
-        contact_detector.reset()     # ✅ RESET CONTACT STATE
+        contact_detector.reset()
         boundary_fired = False
 
     # ---------- SCOREBOARD ----------
@@ -213,27 +227,14 @@ while True:
 
     cv2.rectangle(frame, (10, 10), (380, 95), (0, 0, 0), -1)
 
-    cv2.putText(frame, score_text,
-                (20, 45),
-                cv2.FONT_HERSHEY_SIMPLEX,
-                1.1,
-                (255, 255, 255),
-                3)
+    cv2.putText(frame, score_text, (20, 45),
+                cv2.FONT_HERSHEY_SIMPLEX, 1.1, (255, 255, 255), 3)
 
-    cv2.putText(frame, stats_text,
-                (20, 80),
-                cv2.FONT_HERSHEY_SIMPLEX,
-                0.8,
-                (0, 255, 255),
-                2)
+    cv2.putText(frame, stats_text, (20, 80),
+                cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 255), 2)
 
-    # ---------- FPS ----------
-    cv2.putText(frame, f"FPS: {display_fps}",
-                (20, 235),
-                cv2.FONT_HERSHEY_SIMPLEX,
-                0.8,
-                (255, 255, 255),
-                2)
+    cv2.putText(frame, f"FPS: {display_fps}", (20, 235),
+                cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255, 255, 255), 2)
 
     cv2.imshow("CricketSense | Broadcast View", frame)
     if cv2.waitKey(1) & 0xFF == ord('q'):
